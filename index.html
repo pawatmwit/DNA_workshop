@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>กรณีศึกษาเชื้อดื้อยาที่ฟาร์มไก่ไข่ | Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e9eff6; --stage:#f7fafd; --ink:#10233a; --muted:#51647a; --line:#c3d0de;
+  --card:#ffffff; --brand:#1b46c2; --on-brand:#ffffff; --amber:#b86a00; --amber-fill:#f5a524;
+  --red:#c62f2f; --ok:#1c7c4a; --liq:#a9e3c6; --turbid:#c9b37a; --pellet:#8a5a14; --blue-soft:#cfe0ff;
+  --gel:#0f1c33; --gel-well:#33466a; --band:#f5a524; --bleach:#f6b8b8; --ice:#bfe3fb; --heat:#e07b00;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a1220; --stage:#101b2e; --ink:#e7eef8; --muted:#9fb1c7; --line:#2b3d57;
+    --card:#17253b; --brand:#8fb0ff; --on-brand:#0a1220; --amber:#f5b54a; --amber-fill:#f5a524;
+    --red:#ff8a8a; --ok:#6fd6a0; --liq:#3f9f78; --turbid:#8f7a45; --pellet:#d9a550; --blue-soft:#24406f;
+    --gel:#050b16; --gel-well:#2a3b5c; --band:#f5a524; --bleach:#8e4a4a; --ice:#2f5f86; --heat:#ffa63d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a1220; --stage:#101b2e; --ink:#e7eef8; --muted:#9fb1c7; --line:#2b3d57;
+  --card:#17253b; --brand:#8fb0ff; --on-brand:#0a1220; --amber:#f5b54a; --amber-fill:#f5a524;
+  --red:#ff8a8a; --ok:#6fd6a0; --liq:#3f9f78; --turbid:#8f7a45; --pellet:#d9a550; --blue-soft:#24406f;
+  --gel:#050b16; --gel-well:#2a3b5c; --band:#f5a524; --bleach:#8e4a4a; --ice:#2f5f86; --heat:#ffa63d;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Bai Jamjuree','Sarabun','Leelawadee UI','Thonburi',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+button{font:inherit;color:inherit}
+
+/* ---------- stage ---------- */
+.wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;container-type:size;padding:0}
+.stage{width:min(100cqw,calc(100cqh*16/9));aspect-ratio:16/9;background:var(--stage);position:relative;container-type:inline-size;overflow:hidden}
+.slide{position:absolute;inset:0;padding:5cqw 6cqw 4cqw;display:none;flex-direction:column;gap:2cqw}
+.slide.cur{display:flex}
+h1{font-size:5.6cqw;line-height:1.12;margin:0;font-weight:700;letter-spacing:-0.01em}
+h2{font-size:3.6cqw;line-height:1.15;margin:0;font-weight:700}
+p{margin:0;font-size:2.15cqw;line-height:1.45}
+.muted{color:var(--muted)}
+.cols{display:flex;gap:4cqw;flex:1;min-height:0;align-items:center}
+.cols > .txt{flex:1 1 44%;display:flex;flex-direction:column;gap:1.6cqw}
+.cols > .fig{flex:1 1 56%;min-width:0;display:flex;align-items:center;justify-content:center;height:100%}
+.fig svg,.wide svg{width:100%;height:100%;max-height:100%}
+.wide{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+[data-b]{opacity:0;transition:opacity .45s ease}
+[data-b].on{opacity:1}
+[data-b].off{opacity:0}
+.list{display:flex;flex-direction:column;gap:1.2cqw;margin:0;padding:0;list-style:none}
+.list li{font-size:2.15cqw;line-height:1.4;display:flex;gap:1.2cqw;align-items:flex-start}
+.chip{flex:none;min-width:3cqw;height:3cqw;border-radius:1.5cqw;background:var(--brand);color:var(--on-brand);font-weight:700;font-size:1.7cqw;display:inline-flex;align-items:center;justify-content:center;padding:0 .8cqw}
+.mission{font-size:4.2cqw;line-height:1.22;font-weight:700;max-width:22em}
+.mission b{color:var(--brand)}
+
+/* title slide */
+#s-start .cols{align-items:stretch}
+#s-start .txt{justify-content:center;gap:1.4cqw}
+#s-start .kicker{font-size:2.3cqw;font-weight:600;color:var(--brand)}
+#s-start .org{font-size:1.9cqw;color:var(--muted)}
+
+/* plan */
+.plan{display:flex;gap:.8cqw;align-items:stretch;margin-top:1cqw}
+.plan div{background:var(--card);border:.18cqw solid var(--line);border-radius:1.2cqw;padding:1.4cqw 1.4cqw 1.6cqw;display:flex;flex-direction:column;gap:.6cqw}
+.plan .mins{font-size:3.2cqw;font-weight:700;color:var(--brand);line-height:1}
+.plan .nm{font-size:2cqw;font-weight:600;line-height:1.3}
+.plan .st2{font-size:1.7cqw;color:var(--muted)}
+
+/* safety */
+.safe{display:grid;grid-template-columns:1fr 1fr;gap:1.4cqw 2.4cqw}
+.safe > div{display:flex;gap:1.4cqw;align-items:center;background:var(--card);border:.18cqw solid var(--line);border-radius:1.2cqw;padding:1.2cqw 1.6cqw;font-size:2cqw;line-height:1.35}
+.safe svg{flex:none;width:5cqw;height:5cqw}
+
+/* step slides */
+.step .head{display:flex;align-items:center;gap:1.4cqw;font-size:1.9cqw;font-weight:600;color:var(--muted)}
+.step .num{font-size:9cqw;font-weight:700;line-height:.9;color:var(--brand)}
+.step .key{font-size:4.1cqw;font-weight:700;line-height:1.15}
+.step .desc{font-size:2.3cqw;line-height:1.45}
+.step .txt{gap:1.3cqw}
+.step .fig{background:var(--card);border:.18cqw solid var(--line);border-radius:1.6cqw;padding:1cqw}
+.lanes{display:grid;grid-template-columns:repeat(7,1fr);gap:.8cqw;margin-top:.5cqw}
+.lanes div{background:var(--gel);color:#fff;border-radius:1cqw;padding:1.2cqw .6cqw 1.4cqw;text-align:center;font-size:1.75cqw;line-height:1.3;display:flex;flex-direction:column;gap:.6cqw;align-items:center}
+.lanes b{display:block;width:70%;height:.9cqw;border-radius:.3cqw;background:var(--gel-well)}
+.lanes span{font-weight:700;color:var(--band);font-size:2.2cqw}
+
+/* ---------- svg vocabulary ---------- */
+svg text{font-family:inherit}
+.st{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.fc{fill:var(--card)}
+.t{fill:var(--ink);font-size:20px;font-weight:600}
+.tm{fill:var(--muted);font-size:18px;font-weight:500}
+.ta{fill:var(--amber);font-size:22px;font-weight:700}
+.tb{fill:var(--brand);font-size:22px;font-weight:700}
+.liq{fill:var(--liq);transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(var(--a))}
+.scene{--T:9s}
+.lvB{animation:lvB var(--T) ease-in-out infinite}
+.lvC{animation:lvC var(--T) ease-in-out infinite}
+.lv3{animation:lv3 var(--T) ease-in-out infinite}
+@keyframes lvB{0%,26%{transform:scaleY(var(--a))}44%,94%{transform:scaleY(var(--b))}100%{transform:scaleY(var(--a))}}
+@keyframes lvC{0%,56%{transform:scaleY(var(--a))}74%,94%{transform:scaleY(var(--b))}100%{transform:scaleY(var(--a))}}
+@keyframes lv3{0%,10%{transform:scaleY(var(--a))}28%,46%{transform:scaleY(var(--b))}62%,94%{transform:scaleY(var(--c))}100%{transform:scaleY(var(--a))}}
+.appB{animation:appB var(--T) ease-in-out infinite}
+.appC{animation:appC var(--T) ease-in-out infinite}
+.goneB{animation:goneB var(--T) ease-in-out infinite}
+.goneC{animation:goneC var(--T) ease-in-out infinite}
+@keyframes appB{0%,30%{opacity:0}46%,94%{opacity:1}100%{opacity:0}}
+@keyframes appC{0%,60%{opacity:0}74%,94%{opacity:1}100%{opacity:0}}
+@keyframes goneB{0%,30%{opacity:1}46%,94%{opacity:0}100%{opacity:1}}
+@keyframes goneC{0%,60%{opacity:1}74%,94%{opacity:0}100%{opacity:1}}
+.pip{animation:pip var(--T) ease-in-out infinite}
+@keyframes pip{0%,8%{transform:translate(var(--x0),var(--y0))}22%,42%{transform:translate(var(--x1),var(--y1))}58%,78%{transform:translate(var(--x2),var(--y2))}94%,100%{transform:translate(var(--x0),var(--y0))}}
+.tipliq{fill:var(--liq);animation:tipliq var(--T) linear infinite}
+@keyframes tipliq{0%,30%{opacity:0}40%,62%{opacity:1}74%,100%{opacity:0}}
+.spin{transform-box:fill-box;transform-origin:50% 50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.wave{animation:wave 1.6s ease-in-out infinite}
+@keyframes wave{0%{transform:translateY(8px);opacity:0}40%{opacity:1}100%{transform:translateY(-14px);opacity:0}}
+.mv{animation:mv var(--T) ease-in-out infinite}
+@keyframes mv{0%,56%{transform:translate(0,0)}70%,94%{transform:translate(var(--mx),var(--my))}100%{transform:translate(0,0)}}
+.inv{transform-box:fill-box;transform-origin:50% 50%;animation:inv var(--T) ease-in-out infinite}
+@keyframes inv{0%,52%{transform:rotate(0)}60%{transform:rotate(180deg)}68%{transform:rotate(0)}76%{transform:rotate(180deg)}84%,100%{transform:rotate(0)}}
+.drop{animation:drop var(--T) ease-in infinite}
+@keyframes drop{0%,6%{transform:translateY(0);opacity:0}10%{opacity:1}30%{transform:translateY(var(--dy));opacity:1}34%,100%{transform:translateY(var(--dy));opacity:0}}
+.run{animation:run var(--T) linear infinite}
+@keyframes run{0%{transform:translateX(0);opacity:0}6%{opacity:1}90%{transform:translateX(var(--dx));opacity:1}100%{transform:translateX(var(--dx));opacity:0}}
+.mig{animation:mig 7s ease-out infinite}
+@keyframes mig{0%{transform:translateY(0);opacity:0}8%{opacity:1}70%,92%{transform:translateY(var(--dy));opacity:1}100%{transform:translateY(var(--dy));opacity:0}}
+.glow{animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.35}50%{opacity:.9}}
+.flow{stroke-dasharray:14 12;animation:flow 1.2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+.hgt{animation:hgt 6s ease-in-out infinite}
+@keyframes hgt{0%,15%{transform:translate(0,0);opacity:0}22%{opacity:1}75%,90%{transform:translate(var(--mx),var(--my));opacity:1}100%{transform:translate(var(--mx),var(--my));opacity:0}}
+.flash{animation:flash var(--T) linear infinite}
+@keyframes flash{0%,80%{opacity:0}83%{opacity:.9}90%,100%{opacity:0}}
+
+/* ---------- control bar ---------- */
+.bar{flex:none;display:flex;align-items:center;gap:10px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--gel);color:#fff;font-size:14px}
+.bar button{background:transparent;border:1.5px solid #4b5f85;color:#fff;border-radius:8px;height:34px;min-width:38px;padding:0 10px;cursor:pointer;font-weight:600}
+.bar button:hover{border-color:#fff}
+.bar button:focus-visible{outline:2px solid var(--band);outline-offset:2px}
+.bar button[aria-pressed="true"]{background:var(--band);border-color:var(--band);color:#1a1200}
+.gelbar{flex:1;display:flex;gap:3px;align-items:center;min-width:0;height:34px;overflow:hidden}
+.gelbar button{flex:1;min-width:0;height:14px;padding:0;border:none;border-radius:3px;background:var(--gel-well)}
+.gelbar button.gap{margin-left:8px}
+.gelbar button.seen{background:#7c6a3a}
+.gelbar button.now{background:var(--band);height:22px;box-shadow:0 0 12px var(--band)}
+.count{font-variant-numeric:tabular-nums;min-width:4.2em;text-align:center;color:#c8d4ea}
+.loopui{display:none;gap:6px;align-items:center}
+body.loop .loopui{display:flex}
+body.loop .gelbar{display:none}
+body.loop .loopui{flex:1;flex-wrap:wrap}
+.timer{position:absolute;left:0;bottom:0;height:.5cqw;background:var(--amber-fill);width:0;display:none}
+body.loop .timer{display:block}
+.hint{position:absolute;left:6cqw;bottom:2.4cqw;font-size:1.6cqw;color:var(--muted)}
+@media (max-width:700px){.bar{font-size:12px;gap:6px}.count{display:none}}
+@media (prefers-reduced-motion:reduce){.scene *, .mig, .hgt, .glow, .flow{animation-play-state:paused !important}}
+</style>
+</head>
+<body>
+<main class="wrap"><div class="stage" id="stage">
+
+<section class="slide" id="s-start" data-name="start">
+  <div class="cols">
+    <div class="txt">
+      <div class="kicker">Workshop: DNA extraction and gel electrophoresis</div>
+      <h1>กรณีศึกษา<br>เชื้อดื้อยา<br>ที่ฟาร์มไก่ไข่</h1>
+      <div class="org">คณะสัตวศาสตร์และเทคโนโลยีการเกษตร มหาวิทยาลัยศิลปากร</div>
+    </div>
+    <div class="fig" id="hero"></div>
+  </div>
+  <div class="hint">กด → หรือคลิกปุ่มด้านล่างเพื่อไปต่อ</div>
+</section>
+
+<section class="slide" id="s-case" data-name="case">
+  <h2>เกิดอะไรขึ้นที่ฟาร์มลุงสมชาย</h2>
+  <div class="wide" id="farm1"></div>
+  <ul class="list">
+    <li data-b="1"><span class="chip">1</span><span>ไก่ไข่ทั้ง 4 เล้าท้องเสีย ซึม และออกไข่น้อยลง สัตวแพทย์สงสัยแบคทีเรีย <i>E. coli</i></span></li>
+    <li data-b="2"><span class="chip">2</span><span>ให้ยาปฏิชีวนะ amoxicillin ผสมน้ำดื่ม 5 วัน</span></li>
+    <li data-b="3"><span class="chip">3</span><span>หนึ่งสัปดาห์ต่อมา หายแค่เล้าเดียว</span></li>
+  </ul>
+</section>
+
+<section class="slide" id="s-clues" data-name="clues">
+  <h2>เบาะแส 3 ข้อจากลุงสมชาย</h2>
+  <div class="wide" id="farm2"></div>
+  <ul class="list">
+    <li data-b="1"><span class="chip">ก</span><span>เล้า 4 รับไก่สาวชุดใหม่จากฟาร์มอื่นเมื่อ 2 เดือนก่อน</span></li>
+    <li data-b="2"><span class="chip">ข</span><span>เล้า 2 กับ 4 ใช้ท่อน้ำดื่มเส้นเดียวกัน</span></li>
+    <li data-b="3"><span class="chip">ค</span><span>หลังครบ 5 วัน ถังผสมยาของเล้า 3 ยังเหลือน้ำยาเกือบเต็มถัง</span></li>
+  </ul>
+</section>
+
+<section class="slide" id="s-mission" data-name="mission">
+  <h2 class="muted">ภารกิจของทีมคุณ</h2>
+  <div class="wide" style="justify-content:flex-start">
+    <p class="mission">สกัด DNA จากเชื้อ <i>E. coli</i> ของทั้ง 4 เล้า แล้วใช้ agarose gel ตรวจว่า<b> เล้าไหนมี “พลาสมิดดื้อยา”</b></p>
+  </div>
+  <p class="muted" data-b="1">ทีมละ 4 คน คนละ 1 เล้า แล้วเอาผลมารวมกันบนเจลแผ่นเดียว</p>
+</section>
+
+<section class="slide" id="s-dna" data-name="dna">
+  <h2>DNA ในแบคทีเรียมี 2 แบบ</h2>
+  <div class="cols">
+    <div class="txt">
+      <ul class="list">
+        <li><span class="chip" style="background:#2563eb;color:#fff">●</span><span><b>โครโมโซม</b> DNA วงใหญ่ มีในแบคทีเรียทุกเซลล์</span></li>
+        <li data-b="1"><span class="chip" style="background:#dc2626;color:#fff">●</span><span><b>พลาสมิด</b> DNA วงเล็ก บางเซลล์มี บางเซลล์ไม่มี บางชนิดพกยีนดื้อยา</span></li>
+        <li data-b="2"><span class="chip" style="background:var(--amber-fill);color:#1a1200">→</span><span>พลาสมิดส่งต่อให้แบคทีเรียตัวอื่นได้ เรียกว่า horizontal gene transfer</span></li>
+      </ul>
+    </div>
+    <div class="fig" id="dnafig"></div>
+  </div>
+</section>
+
+<section class="slide" id="s-gel" data-name="gel">
+  <h2>เจลแยก DNA ตามขนาด</h2>
+  <div class="cols">
+    <div class="fig" id="gelfig" style="flex-basis:46%"></div>
+    <div class="txt" style="flex-basis:54%">
+      <ul class="list">
+        <li><span class="chip">−</span><span>DNA มีประจุลบ จึงวิ่งจากขั้วลบไปขั้วบวก</span></li>
+        <li data-b="1"><span class="chip" style="background:#2563eb;color:#fff">●</span><span>โครโมโซมชิ้นใหญ่ วิ่งช้า ค้างอยู่ใกล้หลุม</span></li>
+        <li data-b="2"><span class="chip" style="background:#dc2626;color:#fff">●</span><span>พลาสมิดชิ้นเล็ก วิ่งเร็ว เห็นเป็นแถบแยกลงมา</span></li>
+        <li data-b="3"><span class="chip" style="background:var(--amber-fill);color:#1a1200">?</span><span>หลุม S (ไม่มีพลาสมิด) และ R (มีพลาสมิด) คือตัวเทียบ ไว้ดูว่าตัวอย่างของเราเหมือนแบบไหน</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s-plan" data-name="plan">
+  <h2>วันนี้ทำ 13 ขั้น แบ่งเป็น 4 ส่วน</h2>
+  <div class="plan">
+    <div style="flex:10 1 0;min-width:16cqw"><span class="mins">10 นาที</span><span class="nm">1 เก็บเซลล์</span><span class="st2">ขั้นที่ 1 ถึง 3</span></div>
+    <div style="flex:25 1 0" data-b="1"><span class="mins">25 นาที</span><span class="nm">2 ต้มเซลล์ให้ DNA หลุดออกมา</span><span class="st2">ขั้นที่ 4 ถึง 6</span></div>
+    <div style="flex:35 1 0" data-b="2"><span class="mins">35 นาที</span><span class="nm">3 ตกตะกอน DNA ด้วยเอทานอล</span><span class="st2">ขั้นที่ 7 ถึง 10</span></div>
+    <div style="flex:55 1 0" data-b="3"><span class="mins">55 นาที</span><span class="nm">4 แยก DNA ด้วยเจล แล้วถ่ายภาพ</span><span class="st2">ขั้นที่ 11 ถึง 13</span></div>
+  </div>
+  <p class="muted" data-b="3">ขั้นตอนเดียวกับในเอกสารที่แจก ดูภาพบนจอนี้ประกอบได้ตลอดการทดลอง</p>
+</section>
+
+<section class="slide" id="s-safety" data-name="safety">
+  <h2>ก่อนลงมือ: ความปลอดภัย</h2>
+  <div class="safe" id="safe"></div>
+</section>
+
+<!-- step slides are generated here -->
+<div id="steps"></div>
+
+<section class="slide" id="s-go" data-name="go">
+  <h2>ก่อนเริ่ม: ทำนายผลในใบงานส่วน ก</h2>
+  <p>คิดว่าเล้าไหนจะพบพลาสมิดดื้อยา เพราะอะไร เขียนคำทำนายก่อนเห็นเจล</p>
+  <div>
+    <p class="muted" style="margin-bottom:.8cqw">ผังหลุมบนเจลของแต่ละทีม</p>
+    <div class="lanes">
+      <div><b></b><span>1</span>DNA ladder</div>
+      <div><b></b><span>2</span>S ไม่มีพลาสมิด</div>
+      <div><b></b><span>3</span>R มีพลาสมิด</div>
+      <div><b></b><span>4</span>เล้า 1</div>
+      <div><b></b><span>5</span>เล้า 2</div>
+      <div><b></b><span>6</span>เล้า 3</div>
+      <div><b></b><span>7</span>เล้า 4</div>
+    </div>
+  </div>
+  <p class="mission" style="font-size:3.2cqw" data-b="1">เลือกเล้าของตัวเอง แล้วเริ่มขั้นที่ 1 ได้เลย</p>
+</section>
+
+<div class="timer" id="timer"></div>
+</div></main>
+
+<nav class="bar" aria-label="ควบคุมสไลด์">
+  <button id="prev" aria-label="ย้อนกลับ">◀</button>
+  <button id="next" aria-label="ถัดไป">▶</button>
+  <span class="count" id="count">1 / 1</span>
+  <div class="gelbar" id="gelbar" aria-label="ตำแหน่งสไลด์"></div>
+  <div class="loopui" id="loopui">
+    <span>วน:</span>
+    <button data-scope="0" aria-pressed="true">ทุกขั้น</button>
+    <button data-scope="1" aria-pressed="false">ส่วนที่ 1</button>
+    <button data-scope="2" aria-pressed="false">ส่วนที่ 2</button>
+    <button data-scope="3" aria-pressed="false">ส่วนที่ 3</button>
+    <button data-scope="4" aria-pressed="false">ส่วนที่ 4</button>
+    <span style="margin-left:8px">ขั้นละ</span>
+    <button data-sec="9" aria-pressed="false">9 วิ</button>
+    <button data-sec="18" aria-pressed="true">18 วิ</button>
+    <button data-sec="27" aria-pressed="false">27 วิ</button>
+    <button id="pause" aria-pressed="false">หยุดชั่วคราว</button>
+  </div>
+  <button id="loop" aria-pressed="false" title="วนภาพขั้นตอนอัตโนมัติ (L)">วนอัตโนมัติ</button>
+  <button id="full" title="เต็มจอ (F)">เต็มจอ</button>
+</nav>
+
+<script>
+(function(){
+"use strict";
+var uid = 0;
+function svg(vb, body, cls){ return '<svg viewBox="'+vb+'" class="'+(cls||'')+'" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet">'+body+'</svg>'; }
+
+/* ---------- drawing helpers (viewBox 520 x 360) ---------- */
+var BODY = 'M0,18 H64 V96 L42,160 Q32,172 22,160 L0,96 Z';
+function tube(x, y, o){
+  o = o || {}; var id = 'cp' + (++uid), s = '';
+  s += '<g transform="translate('+x+','+y+')"><g class="'+(o.g||'')+'" style="'+(o.gs||'')+'">';
+  s += '<defs><clipPath id="'+id+'"><path d="'+BODY+'"/></clipPath></defs>';
+  s += '<path d="'+BODY+'" class="fc"/>';
+  function liq(L, extra){
+    if(!L) return '';
+    var st = '--a:'+L.a+';--b:'+(L.b==null?L.a:L.b)+';--c:'+(L.c==null?(L.b==null?L.a:L.b):L.c)+';'+(L.fill?'fill:'+L.fill+';':'');
+    var r = '<g clip-path="url(#'+id+')"><rect class="liq '+(L.cls||'')+'" style="'+st+'" x="0" y="18" width="64" height="154"/></g>';
+    return extra ? '<g class="'+extra+'">'+r+'</g>' : r;
+  }
+  s += liq(o.liq);
+  if(o.turbid) s += liq({a:o.liq.a,b:o.liq.b,c:o.liq.c,cls:o.liq.cls,fill:'var(--turbid)'}, o.turbid);
+  if(o.inside) s += o.inside;
+  if(o.pellet){
+    var p = o.pellet;
+    s += p.side ? '<ellipse class="'+(p.cls||'')+'" cx="46" cy="132" rx="6" ry="13" transform="rotate(20 46 132)" fill="'+(p.fill||'var(--pellet)')+'"/>'
+                : '<ellipse class="'+(p.cls||'')+'" cx="32" cy="158" rx="10" ry="7" fill="'+(p.fill||'var(--pellet)')+'"/>';
+  }
+  s += '<path d="'+BODY+'" class="st"/>';
+  var closed = '<rect x="-5" y="4" width="74" height="14" rx="5" class="st fc"/>';
+  var open = '<path d="M64,16 L96,-18 L106,-8 L74,22" class="st fc"/>';
+  if(o.lid === 'open') s += open; else if(o.lid === 'swap') s += '<g class="goneC">'+closed+'</g><g class="appC">'+open+'</g>'; else s += closed;
+  if(o.hinge) s += '<rect x="64" y="2" width="12" height="18" rx="3" fill="var(--amber-fill)"/>';
+  if(o.lock) s += '<path d="M-9,0 H73 V24 H-9 Z" fill="none" stroke="var(--heat)" stroke-width="4" stroke-linejoin="round"/>';
+  s += '</g>';
+  if(o.label) s += '<text x="32" y="204" text-anchor="middle" class="t">'+o.label+'</text>';
+  return s + '</g>';
+}
+function pipette(v){
+  var st = '--x0:'+v[0]+'px;--y0:'+v[1]+'px;--x1:'+v[2]+'px;--y1:'+v[3]+'px;--x2:'+v[4]+'px;--y2:'+v[5]+'px';
+  return '<g class="pip" style="'+st+'"><rect x="-10" y="0" width="20" height="8" rx="3" class="st fc"/><path d="M0,8 V16" class="st"/>'
+    + '<rect x="-13" y="16" width="26" height="62" rx="8" class="st fc"/>'
+    + '<path d="M-7,78 H7 L2,146 H-2 Z" class="fc"/><path class="tipliq" d="M-4.4,112 H4.4 L2,146 H-2 Z"/><path d="M-7,78 H7 L2,146 H-2 Z" class="st"/></g>';
+}
+function centrifuge(x, y, label){
+  var slots = '', i, a;
+  for(i = 0; i < 8; i++){ a = i * Math.PI / 4; slots += '<circle cx="'+(56*Math.cos(a)).toFixed(1)+'" cy="'+(56*Math.sin(a)).toFixed(1)+'" r="11" class="st fc"/>'; }
+  return '<g transform="translate('+x+','+y+')"><rect x="-112" y="-112" width="224" height="224" rx="26" class="st fc"/>'
+    + '<g class="spin"><circle r="84" class="st"/>'+slots+'<path d="M-84,0 H-70 M70,0 H84 M0,-84 V-70 M0,70 V84" class="st"/><circle r="15" fill="var(--ink)"/></g>'
+    + '<text y="146" text-anchor="middle" class="ta">'+label+'</text></g>';
+}
+function waves(x, y, color){
+  var s = '', i;
+  for(i = 0; i < 3; i++) s += '<path class="wave" style="animation-delay:'+(i*0.35)+'s" d="M'+(x+i*26)+','+y+' q8,-10 0,-20 q-8,-10 0,-20" fill="none" stroke="'+color+'" stroke-width="4" stroke-linecap="round"/>';
+  return s;
+}
+function beaker(x, y, a, b, cls){
+  var id = 'cp' + (++uid);
+  return '<g transform="translate('+x+','+y+')"><defs><clipPath id="'+id+'"><rect x="3" y="0" width="124" height="137" rx="10"/></clipPath></defs>'
+    + '<g clip-path="url(#'+id+')"><rect class="liq '+cls+'" style="--a:'+a+';--b:'+b+';fill:var(--bleach)" x="0" y="0" width="130" height="140"/></g>'
+    + '<path d="M0,0 V126 Q0,140 14,140 H116 Q130,140 130,126 V0" class="st"/><path d="M-8,0 H8 M122,0 H138" class="st"/>'
+    + '<text x="65" y="172" text-anchor="middle" class="t" style="fill:var(--red)">bleach</text></g>';
+}
+function drop(x, y, dy, r, fill, delay, label, lx){
+  return '<g class="drop" style="--dy:'+dy+'px;animation-delay:'+delay+'s"><path d="M'+x+','+y+' q-'+r+','+(r*1.6)+' 0,'+(r*2.4)+' q'+r+',-'+(r*0.8)+' 0,-'+(r*2.4)+' Z" fill="'+fill+'" stroke="var(--ink)" stroke-width="2"/></g>'
+    + (label ? '<text x="'+lx+'" y="'+(y+8)+'" class="t">'+label+'</text>' : '');
+}
+
+/* ---------- 13 protocol scenes ---------- */
+var SC = {};
+SC[1] = function(){ return centrifuge(150,170,'1-2 นาที')
+  + tube(360,70,{liq:{a:.8},turbid:'goneB',pellet:{cls:'appB'},label:'A'})
+  + '<text x="392" y="56" text-anchor="middle" class="tm">เชื้อเลี้ยง 1.5 mL</text>'; };
+SC[2] = function(){ return tube(110,110,{liq:{a:.8,b:.1,cls:'lvB'},pellet:{},label:'A'})
+  + beaker(310,150,.3,.62,'lvC') + pipette([142,-60,142,62,375,10])
+  + '<text x="375" y="350" text-anchor="middle" class="tm">ส่วนใสทิ้งที่นี่เท่านั้น</text>'; };
+SC[3] = function(){ return tube(228,110,{liq:{a:.1,b:.36,cls:'lvB'},turbid:'appC',pellet:{cls:'goneC'},label:'A'})
+  + pipette([260,-70,260,40,260,58]) + '<text x="330" y="80" class="tb">TE 100 µL</text>'
+  + '<text x="330" y="250" class="tm appC">ดูดขึ้นลงจนไม่เหลือก้อน</text>'; };
+SC[4] = function(){ return '<rect x="40" y="200" width="210" height="120" rx="14" class="st fc"/>'
+  + '<path d="M300,236 H480 L462,330 H318 Z" class="st" fill="var(--ice)"/>'
+  + waves(190,188,'var(--heat)')
+  + tube(113,84,{liq:{a:.36,fill:'var(--turbid)'},lock:true,g:'mv',gs:'--mx:245px;--my:36px'})
+  + '<rect x="40" y="232" width="210" height="88" rx="14" class="fc"/><path d="M40,232 H250" class="st"/><rect x="40" y="200" width="210" height="120" rx="14" class="st"/>'
+  + '<rect x="78" y="258" width="134" height="44" rx="8" fill="var(--heat)"/><text x="145" y="289" text-anchor="middle" style="fill:#fff;font-size:26px;font-weight:700">100°C</text>'
+  + '<path d="M306,268 H474 L462,330 H318 Z" fill="var(--ice)"/><path d="M300,236 H480 L462,330 H318 Z" class="st"/>'
+  + '<rect x="330" y="282" width="26" height="26" rx="5" class="st fc" transform="rotate(12 343 295)"/><rect x="420" y="284" width="26" height="26" rx="5" class="st fc" transform="rotate(-10 433 297)"/>'
+  + '<text x="145" y="60" text-anchor="middle" class="ta">10 นาที</text><text x="390" y="60" text-anchor="middle" class="tb appC">น้ำแข็ง 2 นาที</text>'
+  + '<text x="20" y="150" class="tm" transform="rotate(-90 20 150)" text-anchor="middle">cap lock</text>'; };
+SC[5] = function(){ return centrifuge(150,170,'5 นาที')
+  + tube(360,70,{liq:{a:.36},turbid:'goneB',pellet:{cls:'appB',fill:'var(--muted)'},label:'A'})
+  + '<text x="392" y="56" text-anchor="middle" class="tm appB">DNA อยู่ในส่วนใส</text>'; };
+SC[6] = function(){ return tube(110,110,{liq:{a:.36,b:.12,cls:'lvB'},pellet:{fill:'var(--muted)'},label:'A'})
+  + tube(340,110,{liq:{a:0,b:.28,cls:'lvC'},label:'B'}) + pipette([142,-60,142,52,372,58])
+  + '<text x="258" y="96" text-anchor="middle" class="tb">80 µL</text><path d="M196,112 H318 M304,102 L318,112 L304,122" class="st" style="stroke:var(--brand)"/>'
+  + '<text x="260" y="350" text-anchor="middle" class="ta appC">ตั้งไว้ 5 นาที</text>'; };
+SC[7] = function(){ return drop(216,34,84,7,'var(--liq)',0,'NaOAc 8 µL',64)
+  + drop(304,22,96,12,'var(--blue-soft)',.5,'ethanol 200 µL',330)
+  + tube(228,130,{liq:{a:.28,b:.72,cls:'lvB'},g:'inv',inside:'<g class="appC"><path d="M16,98 q10,-12 18,0 t16,0 M20,118 q8,-10 16,0 t12,0 M22,82 q8,8 18,-2" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></g>',label:'B'})
+  + '<text x="72" y="250" class="ta appC">กลับหลอดช้าๆ</text><text x="72" y="278" class="ta appC">10 ครั้ง</text>'
+  + '<text x="330" y="250" class="tm appC">เห็นเส้นใย DNA ไหม</text>'; };
+SC[8] = function(){ return centrifuge(140,170,'10 นาที')
+  + tube(350,110,{liq:{a:.72,b:.04,cls:'lvC'},pellet:{side:true,cls:'appB',fill:'#ffffff'},hinge:true,label:'B'})
+  + pipette([365,-80,365,-80,365,58])
+  + '<text x="432" y="124" class="ta">บานพับ</text><text x="382" y="346" text-anchor="middle" class="tm appB">ตะกอน DNA อยู่ฝั่งบานพับ</text>'; };
+SC[9] = function(){ return drop(254,22,96,12,'var(--blue-soft)',0,'ethanol 70% 500 µL',290)
+  + tube(228,130,{liq:{a:.04,b:.6,c:0,cls:'lv3'},pellet:{side:true,fill:'#ffffff'},lid:'swap',label:'B'})
+  + '<g class="appC">'+waves(126,160,'var(--muted)')+'</g>'
+  + '<text x="40" y="260" class="tb appB">ปั่น 3 นาที</text><text x="40" y="288" class="tb appB">แล้วดูดทิ้งให้หมด</text>'
+  + '<text x="330" y="260" class="ta appC">เปิดฝาให้แห้ง</text><text x="330" y="288" class="ta appC">5 ถึง 10 นาที</text>'; };
+SC[10] = function(){ return tube(228,110,{liq:{a:0,b:.13,cls:'lvB'},pellet:{side:true,cls:'goneC',fill:'#ffffff'},label:'B'})
+  + pipette([260,-70,260,62,260,74]) + '<text x="330" y="80" class="tb">TE 20 µL</text>'
+  + '<text x="330" y="250" class="tm appC">DNA ละลายแล้ว</text>'; };
+SC[11] = function(){ var w = '', i;
+  for(i = 0; i < 5; i++) w += '<rect x="'+(196+i*56)+'" y="232" width="30" height="40" fill="var(--blue-soft)"/>';
+  return '<rect x="150" y="196" width="340" height="110" rx="6" fill="var(--blue-soft)"/>'
+  + '<rect x="170" y="232" width="300" height="74" fill="var(--liq)"/>' + w
+  + '<rect class="liq lvC" style="--a:0;--b:1;fill:var(--brand)" x="252" y="238" width="30" height="34"/>'
+  + '<path d="M150,180 V306 Q150,318 162,318 H478 Q490,318 490,306 V180" class="st"/><path d="M170,232 H196 V272 H226 V232 H252 V272 H282 V232 H308 V272 H338 V232 H364 V272 H394 V232 H420 V272 H450 V232 H470" class="st"/>'
+  + tube(40,60,{liq:{a:.22,b:.1,cls:'lvB',fill:'var(--brand)'},label:'B + dye 4 µL'})
+  + pipette([72,-90,72,-2,267,84])
+  + '<text x="410" y="170" text-anchor="middle" class="tb">โหลด 10 µL</text><text x="320" y="346" text-anchor="middle" class="tm">ปลาย tip อยู่ใต้ผิวบัฟเฟอร์ เหนือหลุม</text>'; };
+SC[12] = function(){ var s = '', i, y;
+  for(i = 0; i < 7; i++){ y = 104 + i*24;
+    s += '<rect x="126" y="'+y+'" width="8" height="15" fill="var(--gel-well)"/>'
+      + '<rect class="run" style="--dx:'+(190 + (i%3)*14)+'px;animation-delay:'+(i*0.08)+'s" x="138" y="'+y+'" width="7" height="15" rx="2" fill="var(--brand)"/>'; }
+  return '<rect x="50" y="76" width="420" height="210" rx="16" class="st fc"/><rect x="104" y="94" width="312" height="174" rx="6" fill="var(--liq)" stroke="var(--ink)" stroke-width="2"/>' + s
+  + '<rect x="66" y="92" width="12" height="178" rx="4" fill="#111827"/><rect x="442" y="92" width="12" height="178" rx="4" fill="#dc2626"/>'
+  + '<circle cx="72" cy="46" r="20" fill="#111827"/><text x="72" y="55" text-anchor="middle" style="fill:#fff;font-size:28px;font-weight:700">−</text>'
+  + '<circle cx="448" cy="46" r="20" fill="#dc2626"/><text x="448" y="56" text-anchor="middle" style="fill:#fff;font-size:28px;font-weight:700">+</text>'
+  + '<text x="260" y="54" text-anchor="middle" class="ta">120 V | 25 นาที</text>'
+  + '<path d="M170,318 H350 M334,306 L350,318 L334,330" class="st" style="stroke:var(--brand)"/><text x="260" y="350" text-anchor="middle" class="tb">DNA วิ่งไปขั้วแดง</text>'; };
+SC[13] = function(){ var s = '', i, x, L = ['L','S','R','1','2','3','4'], ys = [136,152,172,196,224];
+  for(i = 0; i < 7; i++){ x = 104 + i*38;
+    s += '<rect x="'+x+'" y="112" width="24" height="6" fill="var(--gel-well)"/><text x="'+(x+12)+'" y="98" text-anchor="middle" style="fill:#c8d4ea;font-size:16px;font-weight:600">'+L[i]+'</text>';
+    if(i === 0) ys.forEach(function(y){ s += '<rect class="appB" x="'+x+'" y="'+y+'" width="24" height="4" fill="var(--band)"/>'; });
+    else if(i < 3) s += '<rect class="appB" x="'+x+'" y="124" width="24" height="10" fill="var(--band)"/>' + (i === 2 ? '<rect class="appB" x="'+x+'" y="198" width="24" height="5" fill="var(--band)"/>' : '');
+    else s += '<text class="appB" x="'+(x+12)+'" y="176" text-anchor="middle" style="fill:var(--band);font-size:30px;font-weight:700">?</text>';
+  }
+  return '<rect class="glow" x="52" y="58" width="336" height="214" rx="20" fill="#3b82f6"/>'
+  + '<rect x="72" y="76" width="296" height="178" rx="8" fill="var(--gel)"/>' + s
+  + '<g class="appC"><rect x="412" y="110" width="74" height="132" rx="12" class="st fc"/><circle cx="449" cy="150" r="16" class="st"/><circle cx="449" cy="150" r="6" fill="var(--ink)"/><rect x="434" y="216" width="30" height="8" rx="4" fill="var(--muted)"/></g>'
+  + '<rect class="flash" x="52" y="58" width="336" height="214" rx="20" fill="#fff"/>'
+  + '<text x="220" y="304" text-anchor="middle" class="tb">blue light</text><text x="220" y="334" text-anchor="middle" class="tm">มองผ่านแผ่นกรองสีส้ม</text>'; };
+
+var PARTS = ['', 'เก็บเซลล์', 'ต้มเซลล์ให้ DNA หลุดออกมา', 'ตกตะกอน DNA ด้วยเอทานอล', 'แยก DNA ด้วยเจล'];
+var STEPS = [
+ [1,1,'ปั่น 1-2 นาที','หลอด A มีเชื้อเลี้ยง 1.5 mL วางหลอดตรงข้ามกันให้สมดุล แล้วปั่นที่ความเร็วสูงสุด'],
+ [2,1,'ดูดส่วนใสทิ้ง','ใช้ P1000 ดูดส่วนใสลงบีกเกอร์ bleach ให้เหลือแต่ตะกอนเซลล์ อย่าให้ปลาย tip แตะตะกอน'],
+ [3,1,'เติม TE 100 µL','ดูดขึ้นลงจนตะกอนละลายหมด ไม่เหลือก้อน'],
+ [4,2,'ต้ม 100°C 10 นาที','ติด cap lock ทุกครั้ง ผู้สอนเป็นคนนำหลอดเข้าและออก แล้วแช่น้ำแข็ง 2 นาที'],
+ [5,2,'ปั่น 5 นาที','เศษเซลล์จะลงไปอยู่ก้นหลอด ส่วน DNA อยู่ในส่วนใสด้านบน'],
+ [6,2,'ย้ายส่วนใส 80 µL ไปหลอด B','อย่าดูดโดนตะกอนก้นหลอด แล้วตั้งหลอด B ไว้ 5 นาที'],
+ [7,3,'NaOAc 8 µL + ethanol 200 µL','ใช้ ethanol 100% เย็นจัด ปิดฝาแล้วกลับหลอดช้าๆ 10 ครั้ง ไม่ต้องเขย่า'],
+ [8,3,'ปั่น 10 นาที แล้วดูดส่วนใสทิ้ง','หันบานพับฝาออกด้านนอก ตะกอน DNA จะอยู่ฝั่งบานพับ ให้ดูดทิ้งจากผนังฝั่งตรงข้าม'],
+ [9,3,'ล้างด้วย ethanol 70% 500 µL','ปั่น 3 นาที ดูดทิ้งให้หมด แล้วเปิดฝาให้แห้ง 5 ถึง 10 นาที'],
+ [10,3,'เติม TE 20 µL','ดูดขึ้นลงเบาๆ ล้างผนังฝั่งที่มีตะกอน ให้ DNA ละลาย'],
+ [11,4,'dye 4 µL แล้วโหลด 10 µL','ผสม loading dye ให้เข้ากัน วางปลาย tip ใต้ผิวบัฟเฟอร์เหนือหลุม กดช้าๆ ถึงจุดหยุดแรก'],
+ [12,4,'เปิดไฟ 120 V 25 นาที','ต่อสายสีเดียวกัน ดำกับดำ แดงกับแดง DNA วิ่งไปขั้วแดง (+)'],
+ [13,4,'ส่องแสงสีน้ำเงิน แล้วถ่ายภาพ','มองผ่านแผ่นกรองสีส้ม เทียบแถบของเล้าตัวเองกับหลุม S และ R']
+];
+function scene(n){ return svg('0 0 520 360', SC[n](), 'scene'); }
+
+/* ---------- intro figures ---------- */
+function house(x, n){ return '<g transform="translate('+x+',70)"><path d="M0,58 L70,8 L140,58 V150 H0 Z" class="st fc"/><rect x="52" y="104" width="36" height="46" class="st"/><text x="70" y="88" text-anchor="middle" class="t">เล้า '+n+'</text></g>'; }
+function pill(x, text, fill, attrs){ return '<g '+attrs+'><rect x="'+x+'" y="236" width="140" height="40" rx="20" fill="'+fill+'"/><text x="'+(x+70)+'" y="263" text-anchor="middle" style="fill:#fff;font-size:21px;font-weight:700">'+text+'</text></g>'; }
+var HX = [30, 215, 400, 585];
+function farm1(){ var s = '', i;
+  s += '<g data-b="2"><path class="st flow" style="stroke:#2563eb;stroke-width:6" d="M10,36 H750"/>';
+  for(i = 0; i < 4; i++) s += '<path class="st flow" style="stroke:#2563eb;stroke-width:6" d="M'+(HX[i]+70)+',36 V74"/>';
+  s += '<text x="380" y="24" text-anchor="middle" class="tb">amoxicillin ในน้ำดื่ม 5 วัน</text></g>';
+  for(i = 0; i < 4; i++) s += house(HX[i], i+1);
+  for(i = 0; i < 4; i++) s += pill(HX[i], 'ป่วย', '#b86a00', 'data-b="1" data-until="3"');
+  s += pill(HX[0], 'หายป่วย', '#1c7c4a', 'data-b="3"');
+  for(i = 1; i < 4; i++) s += pill(HX[i], 'ยังป่วย', '#c62f2f', 'data-b="3"');
+  return svg('0 0 760 290', s);
+}
+function farm2(){ var s = '', i;
+  s += '<g data-b="2"><path class="st flow" style="stroke:#2563eb;stroke-width:7" d="M285,220 V262 H655 V220"/><text x="470" y="290" text-anchor="middle" class="tb">ท่อน้ำดื่มเส้นเดียวกัน</text></g>';
+  for(i = 0; i < 4; i++) s += house(HX[i], i+1);
+  s += '<g data-b="1"><path d="M790,150 H738 M752,138 L738,150 L752,162" class="st" style="stroke:var(--amber);stroke-width:6"/><rect x="752" y="84" width="54" height="40" rx="6" class="st fc"/><path d="M752,104 H806 M779,84 V124" class="st"/><text x="779" y="70" text-anchor="middle" class="ta">ไก่ชุดใหม่</text></g>';
+  s += '<g data-b="3"><rect x="446" y="6" width="48" height="60" rx="6" fill="#2563eb"/><rect x="446" y="6" width="48" height="8" fill="var(--card)"/><rect x="446" y="6" width="48" height="60" rx="6" class="st"/><text x="508" y="44" class="ta">ยาเหลือเกือบเต็ม</text></g>';
+  return svg('0 0 860 300', s);
+}
+function dnafig(){
+  function cell(x, y){ return '<rect x="'+x+'" y="'+y+'" width="230" height="120" rx="60" class="st" fill="var(--card)"/><path transform="translate('+(x+34)+','+(y+26)+')" d="M10,30 c10,-30 44,-30 46,-6 c2,20 -32,26 -38,6 c-6,-20 40,-34 56,-14 c14,18 -8,42 -32,34 c-22,-8 -26,-28 -6,-34" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>'; }
+  var s = cell(40, 30) + cell(250, 210);
+  s += '<g data-b="1"><circle cx="212" cy="76" r="13" fill="none" stroke="#dc2626" stroke-width="5"/><circle cx="188" cy="112" r="10" fill="none" stroke="#dc2626" stroke-width="5"/><text x="290" y="70" class="t" style="fill:#dc2626">พลาสมิด</text></g>';
+  s += '<text x="60" y="186" class="t" style="fill:#2563eb">โครโมโซม</text>';
+  s += '<g data-b="2"><path d="M222,140 L300,214" class="st" style="stroke-width:16;stroke:var(--line)"/><circle class="hgt" style="--mx:176px;--my:176px" cx="212" cy="76" r="12" fill="none" stroke="#dc2626" stroke-width="5"/></g>';
+  return svg('0 0 520 360', s);
+}
+function gelfig(labels){
+  var s = '<rect x="60" y="20" width="280" height="320" rx="12" fill="var(--gel)"/>', X = [92, 172, 252], N = ['L','S','R'], i;
+  for(i = 0; i < 3; i++) s += '<rect x="'+X[i]+'" y="44" width="56" height="9" fill="var(--gel-well)"/><text x="'+(X[i]+28)+'" y="38" text-anchor="middle" style="fill:#c8d4ea;font-size:17px;font-weight:600">'+N[i]+'</text>';
+  [40,70,104,142,184,226].forEach(function(d, k){ s += '<rect class="mig" style="--dy:'+d+'px;animation-delay:'+(k*0.03)+'s" x="92" y="56" width="56" height="5" fill="#fde68a"/>'; });
+  s += '<rect class="mig" style="--dy:16px" x="172" y="56" width="56" height="12" fill="var(--band)"/><rect class="mig" style="--dy:16px" x="252" y="56" width="56" height="12" fill="var(--band)"/>';
+  s += '<rect class="mig" style="--dy:150px" x="252" y="56" width="56" height="7" fill="var(--band)"/>';
+  s += '<text x="30" y="56" text-anchor="middle" class="t" style="font-size:30px">−</text><text x="30" y="336" text-anchor="middle" class="t" style="font-size:30px;fill:var(--red)">+</text><path d="M30,74 V298 M20,284 L30,298 L40,284" class="st"/>';
+  if(labels){
+    s += '<g data-b="1"><path d="M312,78 H356" class="st" style="stroke:#2563eb"/><text x="364" y="85" class="t" style="fill:#2563eb">โครโมโซม</text></g>';
+    s += '<g data-b="2"><path d="M312,210 H356" class="st" style="stroke:#dc2626"/><text x="364" y="217" class="t" style="fill:#dc2626">พลาสมิด</text></g>';
+  }
+  return svg(labels ? '0 0 500 360' : '0 0 400 360', s);
+}
+var SAFE = [
+ ['<circle cx="20" cy="30" r="12" class="st"/><circle cx="46" cy="30" r="12" class="st"/><path d="M32,30 H34 M8,30 H2 M58,30 H64" class="st"/>', 'สวมเสื้อกาวน์ ถุงมือ แว่นตานิรภัยตลอดเวลา ห้ามกินหรือดื่มในห้อง'],
+ ['<path d="M14,14 V46 Q14,54 22,54 H44 Q52,54 52,46 V14" class="st"/><rect x="17" y="32" width="32" height="19" fill="var(--bleach)"/>', 'เชื้อเลี้ยงและส่วนใสที่ดูดทิ้ง ลงบีกเกอร์ bleach เท่านั้น ห้ามเทลงอ่าง'],
+ ['<path d="M22,56 q8,-8 0,-16 q-8,-8 0,-16 M40,56 q8,-8 0,-16 q-8,-8 0,-16" fill="none" stroke="var(--heat)" stroke-width="5" stroke-linecap="round"/>', 'หลอดที่ต้มร้อนมากและฝาอาจเด้ง ติด cap lock ทุกครั้ง ให้ผู้สอนเป็นคนหยิบ'],
+ ['<path d="M33,6 c10,14 18,22 18,34 a18,18 0 0 1 -36,0 c0,-8 6,-12 8,-20 c4,6 6,6 10,-14 Z" fill="none" stroke="var(--red)" stroke-width="4" stroke-linejoin="round"/>', 'เอทานอลติดไฟง่าย ห้ามใช้ใกล้เปลวไฟ'],
+ ['<rect x="8" y="14" width="50" height="38" rx="6" fill="var(--gel)"/><path d="M16,26 H28 M34,26 H46 M34,40 H46" stroke="var(--band)" stroke-width="5" stroke-linecap="round"/>', 'สีย้อม DNA จับด้วยถุงมือเท่านั้น และดูเจลผ่านแผ่นกรองสีส้ม'],
+ ['<path d="M14,22 H52 L48,58 H18 Z" class="st"/><path d="M10,22 H56 M26,14 H40" class="st"/>', 'tips และหลอดที่ใช้แล้ว ทิ้งถังขยะติดเชื้อ (biohazard) ล้างมือก่อนออกจากห้อง']
+];
+
+/* ---------- build DOM ---------- */
+var $ = function(id){ return document.getElementById(id); };
+$('hero').innerHTML = gelfig(false);
+$('farm1').innerHTML = farm1();
+$('farm2').innerHTML = farm2();
+$('dnafig').innerHTML = dnafig();
+$('gelfig').innerHTML = gelfig(true);
+$('safe').innerHTML = SAFE.map(function(r, i){ return '<div data-b="'+(i+1)+'"><svg viewBox="0 0 66 66">'+r[0]+'</svg><span>'+r[1]+'</span></div>'; }).join('');
+var holder = $('steps'), frag = '';
+STEPS.forEach(function(s){
+  frag += '<section class="slide step" id="s-step-'+s[0]+'" data-name="step-'+s[0]+'" data-step="'+s[0]+'" data-part="'+s[1]+'">'
+    + '<div class="head"><span class="chip">ส่วนที่ '+s[1]+'</span><span>'+PARTS[s[1]]+'</span></div>'
+    + '<div class="cols"><div class="txt"><div class="num">'+s[0]+'</div><div class="key">'+s[2]+'</div><p class="desc">'+s[3]+'</p></div>'
+    + '<div class="fig" id="sc'+s[0]+'"></div></div></section>';
+});
+holder.outerHTML = frag;
+
+var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+var cur = 0, build = 0, looping = false, scope = 0, secs = 18, paused = false, tick = null, t0 = 0;
+var gelbar = $('gelbar');
+slides.forEach(function(sl, i){
+  var b = document.createElement('button');
+  b.setAttribute('aria-label', 'ไปสไลด์ ' + (i + 1));
+  var prev = slides[i - 1];
+  if(i > 0 && (sl.dataset.part !== prev.dataset.part)) b.className = 'gap';
+  b.addEventListener('click', function(){ go(i, 0); });
+  gelbar.appendChild(b);
+});
+function maxBuild(sl){ var m = 0; sl.querySelectorAll('[data-b]').forEach(function(e){ m = Math.max(m, +e.dataset.b); }); return m; }
+function paint(){
+  var sl = slides[cur];
+  sl.querySelectorAll('[data-b]').forEach(function(e){
+    var on = +e.dataset.b <= build, off = e.dataset.until && build >= +e.dataset.until;
+    e.classList.toggle('on', on && !off); e.classList.toggle('off', !!off);
+  });
+}
+function go(i, b){
+  i = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach(function(s, k){ s.classList.toggle('cur', k === i); });
+  cur = i; var sl = slides[cur];
+  build = (b === 'all') ? maxBuild(sl) : (b || 0);
+  if(sl.dataset.step){ $('sc' + sl.dataset.step).innerHTML = scene(+sl.dataset.step); }
+  paint();
+  Array.prototype.forEach.call(gelbar.children, function(btn, k){ btn.classList.toggle('now', k === cur); btn.classList.toggle('seen', k < cur); });
+  $('count').textContent = (cur + 1) + ' / ' + slides.length;
+  try{ history.replaceState(null, '', '#' + sl.dataset.name); }catch(e){}
+  t0 = Date.now();
+}
+function next(){ var sl = slides[cur]; if(build < maxBuild(sl)){ build++; paint(); } else if(cur < slides.length - 1) go(cur + 1, 0); }
+function prev(){ if(build > 0){ build--; paint(); } else if(cur > 0) go(cur - 1, 'all'); }
+
+/* ---------- auto loop ---------- */
+function loopList(){ var a = []; slides.forEach(function(s, i){ if(s.dataset.step && (scope === 0 || +s.dataset.part === scope)) a.push(i); }); return a; }
+function loopNext(){ var a = loopList(), k = a.indexOf(cur); go(a[(k + 1) % a.length], 0); }
+function setLoop(on){
+  looping = on; document.body.classList.toggle('loop', on);
+  $('loop').setAttribute('aria-pressed', on ? 'true' : 'false');
+  $('loop').textContent = on ? 'กลับไปนำเสนอ' : 'วนอัตโนมัติ';
+  clearInterval(tick); $('timer').style.width = '0';
+  if(on){
+    var a = loopList(); if(a.indexOf(cur) < 0) go(a[0], 0);
+    t0 = Date.now();
+    tick = setInterval(function(){
+      if(paused){ t0 += 200; return; }
+      var f = (Date.now() - t0) / (secs * 1000);
+      $('timer').style.width = Math.min(100, f * 100) + '%';
+      if(f >= 1) loopNext();
+    }, 200);
+  }
+}
+$('loopui').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.scope != null){ scope = +b.dataset.scope; this.querySelectorAll('[data-scope]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); var a = loopList(); go(a[0], 0); }
+  else if(b.dataset.sec){ secs = +b.dataset.sec; this.querySelectorAll('[data-sec]').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); t0 = Date.now(); }
+  else if(b.id === 'pause'){ paused = !paused; b.setAttribute('aria-pressed', paused ? 'true' : 'false'); b.textContent = paused ? 'เล่นต่อ' : 'หยุดชั่วคราว'; }
+});
+$('loop').addEventListener('click', function(){ setLoop(!looping); });
+$('next').addEventListener('click', function(){ looping ? loopNext() : next(); });
+$('prev').addEventListener('click', function(){ if(looping){ var a = loopList(), k = a.indexOf(cur); go(a[(k - 1 + a.length) % a.length], 0); } else prev(); });
+function full(){ var d = document, el = d.documentElement; try{ if(d.fullscreenElement) d.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen(); }catch(e){} }
+$('full').addEventListener('click', full);
+$('stage').addEventListener('click', function(){ if(!looping) next(); });
+document.addEventListener('keydown', function(e){
+  if(e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  var k = e.key;
+  if(k === 'ArrowRight' || k === 'PageDown' || k === ' '){ e.preventDefault(); looping ? loopNext() : next(); }
+  else if(k === 'ArrowLeft' || k === 'PageUp'){ e.preventDefault(); $('prev').click(); }
+  else if(k === 'Home') go(0, 0);
+  else if(k === 'End') go(slides.length - 1, 0);
+  else if(k === 'l' || k === 'L') setLoop(!looping);
+  else if(k === 'f' || k === 'F') full();
+});
+function fromHash(){ var h = (location.hash || '').slice(1), i = slides.findIndex(function(s){ return s.dataset.name === h; }); return i < 0 ? 0 : i; }
+window.addEventListener('hashchange', function(){ var i = fromHash(); if(i !== cur) go(i, 0); });
+go(fromHash(), 0);
+})();
+</script>
+</body>
+</html>
