@@ -118,6 +118,12 @@ svg text{font-family:inherit}
 @keyframes pip{0%,8%{transform:translate(var(--x0),var(--y0))}22%,42%{transform:translate(var(--x1),var(--y1))}58%,78%{transform:translate(var(--x2),var(--y2))}94%,100%{transform:translate(var(--x0),var(--y0))}}
 .tipliq{fill:var(--liq);animation:tipliq var(--T) linear infinite}
 @keyframes tipliq{0%,30%{opacity:0}40%,62%{opacity:1}74%,100%{opacity:0}}
+.strm{transform-box:fill-box;transform-origin:50% 0;animation:strm var(--T) linear infinite}
+@keyframes strm{0%,59%{opacity:0;transform:scaleY(0)}63%{opacity:1;transform:scaleY(1)}72%{opacity:1;transform:scaleY(1)}76%,100%{opacity:0;transform:scaleY(1)}}
+.sflow{animation:sflow .3s linear infinite}
+@keyframes sflow{to{stroke-dashoffset:-12}}
+.ripple{transform-box:fill-box;transform-origin:50% 50%;animation:ripple .6s ease-out infinite}
+@keyframes ripple{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.6);opacity:0}}
 .spin{transform-box:fill-box;transform-origin:50% 50%;animation:rot .7s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 .wave{animation:wave 1.6s ease-in-out infinite}
@@ -335,11 +341,15 @@ function tube(x, y, o){
   if(o.label) s += '<text x="32" y="204" text-anchor="middle" class="t">'+o.label+'</text>';
   return s + '</g>';
 }
-function pipette(v){
+function pipette(v, L, col){
   var st = '--x0:'+v[0]+'px;--y0:'+v[1]+'px;--x1:'+v[2]+'px;--y1:'+v[3]+'px;--x2:'+v[4]+'px;--y2:'+v[5]+'px';
   return '<g class="pip" style="'+st+'"><rect x="-10" y="0" width="20" height="8" rx="3" class="st fc"/><path d="M0,8 V16" class="st"/>'
     + '<rect x="-13" y="16" width="26" height="62" rx="8" class="st fc"/>'
-    + '<path d="M-7,78 H7 L2,146 H-2 Z" class="fc"/><path class="tipliq" d="M-4.4,112 H4.4 L2,146 H-2 Z"/><path d="M-7,78 H7 L2,146 H-2 Z" class="st"/></g>';
+    + '<path d="M-7,78 H7 L2,146 H-2 Z" class="fc"/><path class="tipliq" d="M-4.4,112 H4.4 L2,146 H-2 Z"/><path d="M-7,78 H7 L2,146 H-2 Z" class="st"/>'
+    + (L ? '<g class="strm"><rect x="-2.2" y="145" width="4.4" height="'+L+'" rx="2.2" style="fill:'+(col||'var(--liq)')+'" stroke="var(--ok)" stroke-width="1"/>'
+      + '<path class="sflow" d="M0,148 V'+(144+L)+'" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="4 8" stroke-linecap="round"/>'
+      + '<ellipse class="ripple" cx="0" cy="'+(145+L)+'" rx="8" ry="2.6" fill="none" stroke="'+(col||'var(--ok)')+'" stroke-width="1.6"/></g>' : '')
+    + '</g>';
 }
 function centrifuge(x, y, label){
   var slots = '', i, a;
@@ -371,10 +381,10 @@ SC[1] = function(){ return centrifuge(150,170,'1-2 นาที')
   + tube(360,70,{liq:{a:.8},turbid:'goneB',pellet:{cls:'appB'},label:'A'})
   + '<text x="392" y="56" text-anchor="middle" class="tm">เชื้อเลี้ยง 1.5 mL</text>'; };
 SC[2] = function(){ return tube(110,110,{liq:{a:.8,b:.1,cls:'lvB'},pellet:{},label:'A'})
-  + beaker(310,150,.3,.62,'lvC') + pipette([142,-60,142,62,375,10])
+  + beaker(310,150,.3,.62,'lvC') + pipette([142,-60,142,62,375,10],55)
   + '<text x="375" y="350" text-anchor="middle" class="tm">ส่วนใสทิ้งที่นี่เท่านั้น</text>'; };
-SC[3] = function(){ return tube(228,110,{liq:{a:.1,b:.36,cls:'lvB'},turbid:'appC',pellet:{cls:'goneC'},label:'A'})
-  + pipette([260,-70,260,40,260,58]) + '<text x="330" y="80" class="tb">TE 100 µL</text>'
+SC[3] = function(){ return tube(228,110,{liq:{a:.1,b:.36,cls:'lvC'},turbid:'appC',pellet:{cls:'goneC'},label:'A'})
+  + pipette([260,-70,260,40,260,58],34) + '<text x="330" y="80" class="tb">น้ำ 100 µL</text>'
   + '<text x="330" y="250" class="tm appC">ดูดขึ้นลงจนไม่เหลือก้อน</text>'; };
 SC[4] = function(){ return '<rect x="40" y="200" width="210" height="120" rx="14" class="st fc"/>'
   + '<path d="M300,236 H480 L462,330 H318 Z" class="st" fill="var(--ice)"/>'
@@ -390,16 +400,15 @@ SC[5] = function(){ return centrifuge(150,170,'5 นาที')
   + tube(360,70,{liq:{a:.36},turbid:'goneB',pellet:{cls:'appB',fill:'var(--muted)'},label:'A'})
   + '<text x="392" y="56" text-anchor="middle" class="tm appB">DNA อยู่ในส่วนใส</text>'; };
 SC[6] = function(){ return tube(110,110,{liq:{a:.36,b:.12,cls:'lvB'},pellet:{fill:'var(--muted)'},label:'A'})
-  + tube(340,110,{liq:{a:0,b:.28,cls:'lvC'},label:'B'}) + pipette([142,-60,142,52,372,58])
+  + tube(340,110,{liq:{a:0,b:.28,cls:'lvC'},label:'B'}) + pipette([142,-60,142,52,372,58],50)
   + '<text x="258" y="96" text-anchor="middle" class="tb">80 µL</text><path d="M196,112 H318 M304,102 L318,112 L304,122" class="st" style="stroke:var(--brand)"/>'
-  + '<text x="260" y="350" text-anchor="middle" class="ta appC">ตั้งไว้ 5 นาที</text>'; };
-SC[7] = function(){ return drop(216,34,84,7,'var(--liq)',0,'NaOAc 8 µL',64)
-  + drop(304,22,96,12,'var(--blue-soft)',.5,'ethanol 200 µL',330)
-  + tube(228,130,{liq:{a:.28,b:.72,cls:'lvB'},g:'inv',inside:'<g class="appC"><path d="M16,98 q10,-12 18,0 t16,0 M20,118 q8,-10 16,0 t12,0 M22,82 q8,8 18,-2" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></g>',label:'B'})
+  ; };
+SC[7] = function(){ return drop(304,22,96,12,'var(--blue-soft)',0,'ethanol 800 µL',330)
+  + tube(228,130,{liq:{a:.28,b:.92,cls:'lvB'},g:'inv',inside:'<g class="appC"><path d="M16,98 q10,-12 18,0 t16,0 M20,118 q8,-10 16,0 t12,0 M22,82 q8,8 18,-2" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></g>',label:'B'})
   + '<text x="72" y="250" class="ta appC">กลับหลอดช้าๆ</text><text x="72" y="278" class="ta appC">10 ครั้ง</text>'
   + '<text x="330" y="250" class="tm appC">เห็นเส้นใย DNA ไหม</text>'; };
 SC[8] = function(){ return centrifuge(140,170,'10 นาที')
-  + tube(350,110,{liq:{a:.72,b:.04,cls:'lvC'},pellet:{side:true,cls:'appB',fill:'#ffffff'},hinge:true,label:'B'})
+  + tube(350,110,{liq:{a:.92,b:.04,cls:'lvC'},pellet:{side:true,cls:'appB',fill:'#ffffff'},hinge:true,label:'B'})
   + pipette([365,-80,365,-80,365,58])
   + '<text x="432" y="124" class="ta">บานพับ</text><text x="382" y="346" text-anchor="middle" class="tm appB">ตะกอน DNA อยู่ฝั่งบานพับ</text>'; };
 SC[9] = function(){ return drop(254,22,96,12,'var(--blue-soft)',0,'ethanol 70% 500 µL',290)
@@ -407,8 +416,8 @@ SC[9] = function(){ return drop(254,22,96,12,'var(--blue-soft)',0,'ethanol 70% 5
   + '<g class="appC">'+waves(126,160,'var(--muted)')+'</g>'
   + '<text x="40" y="260" class="tb appB">ปั่น 3 นาที</text><text x="40" y="288" class="tb appB">แล้วดูดทิ้งให้หมด</text>'
   + '<text x="330" y="260" class="ta appC">เปิดฝาให้แห้ง</text><text x="330" y="288" class="ta appC">5 ถึง 10 นาที</text>'; };
-SC[10] = function(){ return tube(228,110,{liq:{a:0,b:.13,cls:'lvB'},pellet:{side:true,cls:'goneC',fill:'#ffffff'},label:'B'})
-  + pipette([260,-70,260,62,260,74]) + '<text x="330" y="80" class="tb">TE 20 µL</text>'
+SC[10] = function(){ return tube(228,110,{liq:{a:0,b:.13,cls:'lvC'},pellet:{side:true,cls:'goneC',fill:'#ffffff'},label:'B'})
+  + pipette([260,-70,260,62,260,74],46) + '<text x="330" y="80" class="tb">น้ำ 20 µL</text>'
   + '<text x="330" y="250" class="tm appC">DNA ละลายแล้ว</text>'; };
 SC[11] = function(){ var w = '', i;
   for(i = 0; i < 5; i++) w += '<rect x="'+(196+i*56)+'" y="232" width="30" height="40" fill="var(--blue-soft)"/>';
@@ -417,7 +426,7 @@ SC[11] = function(){ var w = '', i;
   + '<rect class="liq lvC" style="--a:0;--b:1;fill:var(--brand)" x="252" y="238" width="30" height="34"/>'
   + '<path d="M150,180 V306 Q150,318 162,318 H478 Q490,318 490,306 V180" class="st"/><path d="M170,232 H196 V272 H226 V232 H252 V272 H282 V232 H308 V272 H338 V232 H364 V272 H394 V232 H420 V272 H450 V232 H470" class="st"/>'
   + tube(40,60,{liq:{a:.22,b:.1,cls:'lvB',fill:'var(--brand)'},label:'B + dye 4 µL'})
-  + pipette([72,-90,72,-2,267,84])
+  + pipette([72,-90,72,-2,267,84],30,'var(--brand)')
   + '<text x="410" y="170" text-anchor="middle" class="tb">โหลด 10 µL</text><text x="320" y="346" text-anchor="middle" class="tm">ปลาย tip อยู่ใต้ผิวบัฟเฟอร์ เหนือหลุม</text>'; };
 SC[12] = function(){ var s = '', i, y;
   for(i = 0; i < 7; i++){ y = 104 + i*24;
@@ -446,14 +455,14 @@ var PARTS = ['', 'เก็บเซลล์', 'ต้มเซลล์ให�
 var STEPS = [
  [1,1,'ปั่น 1-2 นาที','หลอด A มีเชื้อเลี้ยง 1.5 mL วางหลอดตรงข้ามกันให้สมดุล แล้วปั่นที่ความเร็วสูงสุด'],
  [2,1,'ดูดส่วนใสทิ้ง','ใช้ P1000 ดูดส่วนใสลงบีกเกอร์ bleach ให้เหลือแต่ตะกอนเซลล์ อย่าให้ปลาย tip แตะตะกอน'],
- [3,1,'เติม TE 100 µL','ดูดขึ้นลงจนตะกอนละลายหมด ไม่เหลือก้อน'],
+ [3,1,'เติมน้ำ 100 µL','ดูดขึ้นลงจนตะกอนละลายหมด ไม่เหลือก้อน'],
  [4,2,'ต้ม 100°C 10 นาที','ติด cap lock ทุกครั้ง ผู้สอนเป็นคนนำหลอดเข้าและออก แล้วแช่น้ำแข็ง 2 นาที'],
  [5,2,'ปั่น 5 นาที','เศษเซลล์จะลงไปอยู่ก้นหลอด ส่วน DNA อยู่ในส่วนใสด้านบน'],
- [6,2,'ย้ายส่วนใส 80 µL ไปหลอด B','อย่าดูดโดนตะกอนก้นหลอด แล้วตั้งหลอด B ไว้ 5 นาที'],
- [7,3,'NaOAc 8 µL + ethanol 200 µL','ใช้ ethanol 100% เย็นจัด ปิดฝาแล้วกลับหลอดช้าๆ 10 ครั้ง ไม่ต้องเขย่า'],
+ [6,2,'ย้ายส่วนใส 80 µL ไปหลอด B','อย่าดูดโดนตะกอนก้นหลอด'],
+ [7,3,'เติม ethanol เย็นจัด 800 µL','ใช้ ethanol 100% เย็นจัด ปิดฝาแล้วกลับหลอดช้าๆ 10 ครั้ง ไม่ต้องเขย่า'],
  [8,3,'ปั่น 10 นาที แล้วดูดส่วนใสทิ้ง','หันบานพับฝาออกด้านนอก ตะกอน DNA จะอยู่ฝั่งบานพับ ให้ดูดทิ้งจากผนังฝั่งตรงข้าม'],
  [9,3,'ล้างด้วย ethanol 70% 500 µL','ปั่น 3 นาที ดูดทิ้งให้หมด แล้วเปิดฝาให้แห้ง 5 ถึง 10 นาที'],
- [10,3,'เติม TE 20 µL','ดูดขึ้นลงเบาๆ ล้างผนังฝั่งที่มีตะกอน ให้ DNA ละลาย'],
+ [10,3,'เติมน้ำ 20 µL','ดูดขึ้นลงเบาๆ ล้างผนังฝั่งที่มีตะกอน ให้ DNA ละลาย'],
  [11,4,'dye 4 µL แล้วโหลด 10 µL','ผสม loading dye ให้เข้ากัน วางปลาย tip ใต้ผิวบัฟเฟอร์เหนือหลุม กดช้าๆ ถึงจุดหยุดแรก'],
  [12,4,'เปิดไฟ 120 V 25 นาที','ต่อสายสีเดียวกัน ดำกับดำ แดงกับแดง DNA วิ่งไปขั้วแดง (+)'],
  [13,4,'ส่องแสงสีน้ำเงิน แล้วถ่ายภาพ','มองผ่านแผ่นกรองสีส้ม เทียบแถบของเล้าตัวเองกับหลุม S และ R']
